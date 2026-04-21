@@ -86,7 +86,7 @@ export default function LoginScreen({ navigation }) {
           error={errors.senha}
         />
 
-        <TouchableOpacity>
+        <TouchableOpacity onPress={() => navigation.navigate("RecuperarSenha")}>
           <Text style={styles.recover}>RECUPERAR SENHA</Text>
         </TouchableOpacity>
 
