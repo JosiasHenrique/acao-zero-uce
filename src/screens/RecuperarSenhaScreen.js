@@ -28,8 +28,8 @@ export default function RecuperarSenhaScreen({ navigation }) {
 
     // --- CÓDIGO TEMPORÁRIO PARA TESTAR O VISUAL ---
     navigation.navigate("ConfirmarCodigo", { email: email });
-    return; // Esse "return" faz a função parar aqui e ignora a API abaixo.
-    // ----------------------------------------------
+    return;
+    
 
     setLoading(true);
 

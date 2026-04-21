@@ -2,6 +2,7 @@ import { useState } from "react";
 import { View, Text, StyleSheet, TouchableOpacity, Image, ScrollView, Alert } from "react-native";
 
 import InputField from "../components/InputField";
+import PrimaryButton from "../components/PrimaryButton"; // <-- Importado o botão padrão
 
 const API_BASE_URL = "http://10.0.2.2:3000/api/v1/auth";
 
@@ -147,16 +148,13 @@ export default function ConfirmarCodigoScreen({ route, navigation }) {
             secure
           />
 
-          <TouchableOpacity 
-            style={styles.btnAtualizar} 
-            onPress={handleAtualizarSenha}
-            disabled={loading}
-          >
-            <Text style={styles.btnAtualizarIcon}>↺</Text>
-            <Text style={styles.btnAtualizarText}>
-              {loading ? "Aguarde..." : "Atualizar Senha"}
-            </Text>
-          </TouchableOpacity>
+          {/* USANDO O SEU COMPONENTE PRIMARY BUTTON */}
+          <View style={{ marginTop: 10 }}>
+            <PrimaryButton 
+              title={loading ? "Aguarde..." : "Atualizar Senha"} 
+              onPress={handleAtualizarSenha} 
+            />
+          </View>
 
           {/* CAIXA DE ERRO (Condicional) */}
           {erroAtivo && (
@@ -187,7 +185,6 @@ export default function ConfirmarCodigoScreen({ route, navigation }) {
   );
 }
 
-// Cores atualizadas para combinar com a tela
 const PRIMARY = "#33b8af"; 
 const LIGHT_BG = "#FFFFFF"; 
 const ERROR_BG = "#FCE8E8";
@@ -225,12 +222,7 @@ const styles = StyleSheet.create({
   labelRow: { flexDirection: "row", justifyContent: "space-between", alignItems: "center", marginBottom: 6 },
   label: { fontSize: 12, color: "#555", marginBottom: 8, letterSpacing: 1, marginTop: 10 },
   
-  // Cor alterada para ficar mais parecida com a imagem do protótipo
   labelRed: { fontSize: 10, fontWeight: "700", color: "#A02B4E" },
-  
-  btnAtualizar: { backgroundColor: PRIMARY, flexDirection: "row", alignItems: "center", justifyContent: "center", paddingVertical: 14, borderRadius: 8, marginTop: 20 },
-  btnAtualizarIcon: { color: "#FFF", fontSize: 18, marginRight: 8, fontWeight: "bold" },
-  btnAtualizarText: { color: "#FFF", fontSize: 15, fontWeight: "700" },
   
   errorBox: { flexDirection: "row", alignItems: "center", backgroundColor: ERROR_BG, padding: 14, borderRadius: 8, marginTop: 16 },
   errorIconContainer: { width: 20, height: 20, borderRadius: 10, backgroundColor: ERROR_TEXT, alignItems: "center", justifyContent: "center", marginRight: 10 },
