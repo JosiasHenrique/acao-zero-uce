@@ -26,6 +26,11 @@ export default function RecuperarSenhaScreen({ navigation }) {
   const handleEnviarCodigo = async () => {
     if (!validate()) return;
 
+    // --- CÓDIGO TEMPORÁRIO PARA TESTAR O VISUAL ---
+    navigation.navigate("ConfirmarCodigo", { email: email });
+    return; // Esse "return" faz a função parar aqui e ignora a API abaixo.
+    // ----------------------------------------------
+
     setLoading(true);
 
     try {
@@ -41,7 +46,7 @@ export default function RecuperarSenhaScreen({ navigation }) {
 
       Alert.alert("Sucesso", "Código enviado para o e-mail.");
       
-      // navigation.navigate("ConfirmarCodigo")
+      navigation.navigate("ConfirmarCodigo",{email:email});
 
     } catch (error) {
       Alert.alert("Erro", "Falha ao enviar código.");
