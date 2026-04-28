@@ -4,6 +4,7 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 
 import InputField from "../components/InputField";
 import PrimaryButton from "../components/PrimaryButton";
+import PerfilScreen from "./PerfilScreen";
 
 export default function LoginScreen({ navigation }) {
   const [email, setEmail] = useState("");
@@ -92,7 +93,8 @@ export default function LoginScreen({ navigation }) {
 
         <PrimaryButton
           title="Entrar"
-          onPress={handleLogin}
+          // onPress={handleLogin}
+          onPress={() => navigation.navigate("Perfil")}
           loading={loading}
         />
 
