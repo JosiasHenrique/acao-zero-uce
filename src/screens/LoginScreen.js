@@ -1,10 +1,8 @@
 import { useState } from "react";
 import { View, Text, StyleSheet, Alert, TouchableOpacity, Image } from "react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-
 import InputField from "../components/InputField";
 import PrimaryButton from "../components/PrimaryButton";
-import PerfilScreen from "./PerfilScreen";
 
 export default function LoginScreen({ navigation }) {
   const [email, setEmail] = useState("");
@@ -94,7 +92,7 @@ export default function LoginScreen({ navigation }) {
         <PrimaryButton
           title="Entrar"
           // onPress={handleLogin}
-          onPress={() => navigation.navigate("Perfil")}
+          onPress={() => navigation.navigate("Main")}
           loading={loading}
         />
 
