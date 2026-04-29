@@ -128,7 +128,7 @@ function Option({ title, icon }) {
         <TouchableOpacity style={styles.option}>
             <View style={styles.optionLeft}>
                 <View style={styles.iconCircle}>
-                    <Icon name={icon} size={22} color="#2E7D32" />
+                    <Icon name={icon} size={22} color="#33b8af" />
                 </View>
 
                 <Text style={styles.optionText}>{title}</Text>
