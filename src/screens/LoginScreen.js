@@ -1,9 +1,10 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { View, Text, StyleSheet, Alert, TouchableOpacity, Image } from "react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import InputField from "../components/InputField";
 import PrimaryButton from "../components/PrimaryButton";
 import AuthFooter from "../components/AuthFooter";
+import apiClient from "../../api/apiClient";
 
 export default function LoginScreen({ navigation }) {
   const [email, setEmail] = useState("");
@@ -11,6 +12,10 @@ export default function LoginScreen({ navigation }) {
 
   const [errors, setErrors] = useState({});
   const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+    apiClient.post
+  })
 
   const validate = () => {
     let newErrors = {};
@@ -37,15 +42,26 @@ export default function LoginScreen({ navigation }) {
     setLoading(true);
 
     try {
-      const emailKey = email.toLowerCase().trim();
-      const userJSON = await AsyncStorage.getItem(emailKey);
 
-      if (userJSON !== null) {
-        await AsyncStorage.setItem("currentUser", userJSON);
-        navigation.replace("Main");
-      } else {
-        Alert.alert("Acesso Negado", "E-mail não encontrado.");
+      const response = await apiClient.post("/auth/login", {
+        email: email.toLowerCase().trim(),
+        password: senha,
+        accessMode: "APP",
+        appId: 1
+      });
+
+      const access_token = response.data.access_token;
+
+      console.log(`Log do token: ${access_token}`)
+
+      if (!access_token) {
+        Alert.alert("Acesso Negado", "Token de acesso não fornecido.");
+        return;
       }
+
+      await AsyncStorage.setItem("access_token", access_token)
+
+      navigation.navigate("Main")
     } catch {
       Alert.alert("Erro", "Problema ao fazer login.");
     } finally {
@@ -92,8 +108,7 @@ export default function LoginScreen({ navigation }) {
 
         <PrimaryButton
           title="Entrar"
-          // onPress={handleLogin}
-          onPress={() => navigation.navigate("Main")}
+          onPress={handleLogin}
           loading={loading}
         />
 
@@ -104,7 +119,6 @@ export default function LoginScreen({ navigation }) {
           </TouchableOpacity>
         </View>
       </View>
-
       <AuthFooter />
     </View>
   );
