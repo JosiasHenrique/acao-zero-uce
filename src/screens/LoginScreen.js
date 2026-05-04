@@ -3,6 +3,7 @@ import { View, Text, StyleSheet, Alert, TouchableOpacity, Image } from "react-na
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import InputField from "../components/InputField";
 import PrimaryButton from "../components/PrimaryButton";
+import AuthFooter from "../components/AuthFooter";
 
 export default function LoginScreen({ navigation }) {
   const [email, setEmail] = useState("");
@@ -104,17 +105,7 @@ export default function LoginScreen({ navigation }) {
         </View>
       </View>
 
-      <View style={styles.footer}>
-        <Text style={styles.footerText}>
-          © 2024 UNIFAE CARE. CLINICAL EDITORIAL SYSTEM.
-        </Text>
-
-        <View style={styles.footerLinks}>
-          <Text style={styles.footerLink}>PRIVACIDADE</Text>
-          <Text style={styles.footerLink}>TERMOS</Text>
-          <Text style={styles.footerLink}>ACESSIBILIDADE</Text>
-        </View>
-      </View>
+      <AuthFooter />
     </View>
   );
 }
@@ -183,25 +174,4 @@ const styles = StyleSheet.create({
     marginTop: 4,
   },
 
-  footer: {
-    alignItems: "center",
-    paddingBottom: 20,
-  },
-
-  footerText: {
-    fontSize: 12,
-    color: "#8A8A8A",
-    textAlign: "center",
-    marginBottom: 10,
-  },
-
-  footerLinks: {
-    flexDirection: "row",
-    gap: 20,
-  },
-
-  footerLink: {
-    fontSize: 12,
-    color: "#8A8A8A",
-  },
 });

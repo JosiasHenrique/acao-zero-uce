@@ -4,6 +4,9 @@ import { View, Text, StyleSheet, Image, TouchableOpacity, ScrollView, Alert } fr
 import * as ImagePicker from "expo-image-picker";
 import Icon from "react-native-vector-icons/Ionicons";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import ScreenHeader from "../components/ScreenHeader";
+import PersonRow from "../components/PersonRow";
+import SettingsOption from "../components/SettingsOption";
 
 export default function PerfilScreen({ navigation }) {
 
@@ -35,13 +38,10 @@ export default function PerfilScreen({ navigation }) {
 
     return (
         <ScrollView style={styles.container}>
-            <View style={styles.header}>
-                <Text style={styles.appName}>UNIFAE Care</Text>
-
+            <ScreenHeader rightElement={
                 <TouchableOpacity>
                     <Icon name="person-circle" size={34} color="#33b8af" />
-                </TouchableOpacity>
-            </View>
+                </TouchableOpacity>}/>
             <View style={styles.profileContainer}>
                 <TouchableOpacity onPress={pickImage}>
                     <Image
@@ -65,34 +65,19 @@ export default function PerfilScreen({ navigation }) {
             <View style={styles.card}>
                 <Text style={styles.label}>FISIOTERAPEUTA RESPONSÁVEL</Text>
 
-                <View style={styles.personRow}>
-                    <Image
-                        source={require("../../assets/dra.jpg")}
-                        style={styles.personImage}
-                    />
-
-                    <View>
-                        <Text style={styles.person}>Dr. Sarah Chen</Text>
-                        <Text style={styles.role}>Especialista Ortopédica</Text>
-                    </View>
-                </View>
+                    <PersonRow 
+                    image={require("../../assets/dra.jpg")}
+                    name="Dr. Sarah Chen"
+                    role="Especialista Ortopédica"/>
 
                 <Text style={[styles.label, { marginTop: 20 }]}>
                     COORDENADOR RESPONSÁVEL
                 </Text>
 
-                <View style={styles.personRow}>
-                    <Image
-                        source={require("../../assets/dra2.jpg")}
-                        style={styles.personImage}
-                    />
-
-                    <View>
-                        <Text style={styles.person}>Dr. Vanessa</Text>
-                        <Text style={styles.role}>Especialista Ortopédica</Text>
-                    </View>
-                </View>
-
+                <PersonRow 
+                    image={require("../../assets/dra2.jpg")}
+                    name="Dr. Vanessa"
+                    role="Especialista Ortopédica"/>
 
             <View style={styles.metaCard}>
                 <Text style={styles.metaLabel}>META SEMANAL</Text>
@@ -110,9 +95,9 @@ export default function PerfilScreen({ navigation }) {
 
             <Text style={styles.section}>CONFIGURAÇÕES E SUPORTE</Text>
 
-            <Option icon="notifications-outline" title="Lembretes" />
-            <Option icon="notifications-circle-outline" title="Notificações" />
-            <Option icon="shield-checkmark-outline" title="Privacidade e Dados" />
+            <SettingsOption icon="notifications-outline" title="Lembretes" />
+            <SettingsOption icon="notifications-circle-outline" title="Notificações" />
+            <SettingsOption icon="shield-checkmark-outline" title="Privacidade e Dados" />
 
             <TouchableOpacity style={styles.logoutButton} onPress={logout}>
                 <Text style={styles.logoutText}>Sair</Text>
@@ -123,39 +108,10 @@ export default function PerfilScreen({ navigation }) {
     );
 }
 
-function Option({ title, icon }) {
-    return (
-        <TouchableOpacity style={styles.option}>
-            <View style={styles.optionLeft}>
-                <View style={styles.iconCircle}>
-                    <Icon name={icon} size={22} color="#33b8af" />
-                </View>
-
-                <Text style={styles.optionText}>{title}</Text>
-            </View>
-
-            <Icon name="chevron-forward" size={22} color="#999" />
-        </TouchableOpacity>
-    );
-}
-
 const styles = StyleSheet.create({
     container: {
         flex: 1,
         backgroundColor: "#FFF",
-    },
-
-    header: {
-        flexDirection: "row",
-        justifyContent: "space-between",
-        alignItems: "center",
-        paddingTop: 50,
-        paddingHorizontal: 20,
-    },
-
-    appName: {
-        fontSize: 18,
-        fontWeight: "600",
     },
 
     profileContainer: {
@@ -202,59 +158,11 @@ const styles = StyleSheet.create({
         marginBottom: 10,
     },
 
-    personRow: {
-        flexDirection: "row",
-        alignItems: "center",
-        gap: 12,
-    },
-
-    personImage: {
-        width: 55,
-        height: 55,
-        borderRadius: 12,
-    },
-
-    person: {
-        fontSize: 17,
-        fontWeight: "600",
-    },
-
-    role: {
-        color: "#777",
-    },
-
     section: {
         marginLeft: 20,
         marginTop: 10,
         color: "#999",
         fontSize: 12,
-    },
-
-    option: {
-        flexDirection: "row",
-        justifyContent: "space-between",
-        alignItems: "center",
-        backgroundColor: "#F3F3F3",
-        marginHorizontal: 15,
-        marginTop: 12,
-        padding: 18,
-        borderRadius: 20,
-    },
-
-    optionLeft: {
-        flexDirection: "row",
-        alignItems: "center",
-        gap: 12,
-    },
-
-    iconCircle: {
-        backgroundColor: "#EAEAEA",
-        padding: 10,
-        borderRadius: 30,
-    },
-
-    optionText: {
-        fontSize: 16,
     },
 
     logoutButton: {
