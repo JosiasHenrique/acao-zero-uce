@@ -2,6 +2,7 @@ import { View, Text, StyleSheet, Image, ScrollView, TouchableOpacity } from "rea
 
 import { Ionicons } from "@expo/vector-icons";
 import ProgressCircle from "../components/ProgressCircle";
+import ExerciseCard from "../components/ExerciseCard";
 
 export default function HomeScreen() {
 
@@ -38,27 +39,12 @@ export default function HomeScreen() {
           <Text style={styles.exerciseCount}>1 exercício</Text>
         </View>
 
-        <View style={styles.exerciseCard}>
-          <View style={{ flex: 1 }}>
-            <Text style={styles.exerciseName}>
-              Mobilidade de Ombro
-            </Text>
-
-            <Text style={styles.exerciseDesc}>
-              Pós-cirúrgico • Câncer de mama
-            </Text>
-
-            <View style={styles.timeRow}>
-              <Ionicons name="time-outline" size={16} color="#555" />
-              <Text style={styles.time}> 12 min</Text>
-            </View>
-          </View>
-
-          <Image
-            source={require("../../assets/exercicio.jpg")}
-            style={styles.exerciseImage}
-          />
-        </View>
+      <ExerciseCard 
+        title="Mobilidade de Ombro"
+        description="Pós-cirúrgico • Câncer de mama"
+        time="12 min"
+        image={require("../../assets/exercicio.jpg")}
+      />
 
         <TouchableOpacity style={styles.startButton}>
           <Text style={styles.startText}>Iniciar exercício</Text>
@@ -157,41 +143,6 @@ const styles = StyleSheet.create({
   exerciseCount: {
     color: PRIMARY,
     fontWeight: "600",
-  },
-
-  exerciseCard: {
-    backgroundColor: "#F2F2F2",
-    borderRadius: 20,
-    padding: 15,
-    marginTop: 15,
-    flexDirection: "row",
-    alignItems: "center",
-  },
-
-  exerciseName: {
-    fontSize: 17,
-    fontWeight: "700",
-  },
-
-  exerciseDesc: {
-    color: "#666",
-    marginTop: 5,
-  },
-
-  timeRow: {
-    flexDirection: "row",
-    alignItems: "center",
-    marginTop: 10,
-  },
-
-  time: {
-    color: "#555",
-  },
-
-  exerciseImage: {
-    width: 90,
-    height: 90,
-    resizeMode: "contain",
   },
 
   startButton: {

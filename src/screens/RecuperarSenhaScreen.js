@@ -3,6 +3,9 @@ import { View, Text, StyleSheet, Alert, TouchableOpacity, Image } from "react-na
 
 import InputField from "../components/InputField";
 import PrimaryButton from "../components/PrimaryButton";
+import AuthFooter from "../components/AuthFooter"; 
+import ScreenHeader from "../components/ScreenHeader";
+import AlertBox from "../components/AlertBox";
 
 export default function RecuperarSenhaScreen({ navigation }) {
   const [email, setEmail] = useState("");
@@ -57,9 +60,7 @@ export default function RecuperarSenhaScreen({ navigation }) {
 
   return (
     <View style={styles.container}> 
-      <View style={styles.header}>
-        <Text style={styles.headerTitle}>UNIFAE Care</Text>
-      </View>
+      <ScreenHeader />
 
       <View style={styles.content}>
         <Image
@@ -96,32 +97,13 @@ export default function RecuperarSenhaScreen({ navigation }) {
           </TouchableOpacity>
         </View>
 
-        <View style={styles.infoBox}>
-          <View style={styles.infoHeader}>
-            <View style={styles.infoIcon}>
-              <Text style={styles.infoIconText}>i</Text>
-            </View>
-            <Text style={styles.infoTitle}>Informação Importante</Text>
-          </View>
-
-          <Text style={styles.infoText}>
-            Por motivos de segurança, o código de recuperação expira em 15 minutos.
-            Verifique sua caixa de spam caso não receba o e-mail em instantes.
-          </Text>
-        </View>
+       <AlertBox 
+          type="info"
+          title="Informação Importante"
+          message="Por motivos de segurança, o código de recuperação expira em 15 minutos. Verifique sua caixa de spam caso não receba o e-mail em instantes."/>
       </View>
 
-      <View style={styles.footer}>
-        <View style={styles.footerLinks}>
-          <Text style={styles.footerLink}>PRIVACIDADE</Text>
-          <Text style={styles.footerLink}>TERMOS</Text>
-          <Text style={styles.footerLink}>ACESSIBILIDADE</Text>
-        </View>
-
-        <Text style={styles.footerText}>
-          © 2024 UNIFAE CARE. CLINICAL EDITORIAL SYSTEM.
-        </Text>
-      </View>
+      <AuthFooter />
     </View>
   );
 }
@@ -133,18 +115,6 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: "#FFFFFF",
   },
-
-  header: {
-    paddingTop: 50,
-    alignItems: "center",
-  },
-
-  headerTitle: {
-    fontSize: 18,
-    fontWeight: "600",
-    color: "#1A1A1A",
-  },
-
   content: {
     flex: 1,
     paddingHorizontal: 24,
@@ -195,67 +165,4 @@ const styles = StyleSheet.create({
     fontWeight: "600",
   },
 
-  infoBox: {
-    backgroundColor: "#F1F3F2",
-    borderRadius: 12,
-    padding: 16,
-    marginTop: 30,
-    borderLeftWidth: 4,
-    borderLeftColor: PRIMARY,
-  },
-
-  infoHeader: {
-    flexDirection: "row",
-    alignItems: "center",
-    marginBottom: 10,
-  },
-
-  infoIcon: {
-    width: 24,
-    height: 24,
-    borderRadius: 12,
-    backgroundColor: PRIMARY,
-    alignItems: "center",
-    justifyContent: "center",
-    marginRight: 10,
-  },
-
-  infoIconText: {
-    color: "#FFF",
-    fontWeight: "700",
-  },
-
-  infoTitle: {
-    fontWeight: "600",
-    fontSize: 14,
-    color: "#1A1A1A",
-  },
-
-  infoText: {
-    fontSize: 13,
-    color: "#555",
-    lineHeight: 18,
-  },
-
-  footer: {
-    alignItems: "center",
-    paddingBottom: 20,
-  },
-
-  footerText: {
-    fontSize: 12,
-    color: "#8A8A8A",
-    textAlign: "center",
-    marginTop: 10,
-  },
-
-  footerLinks: {
-    flexDirection: "row",
-    gap: 20,
-  },
-
-  footerLink: {
-    fontSize: 12,
-    color: "#8A8A8A",
-  },
 });
