@@ -9,8 +9,22 @@ import PersonRow from "../components/PersonRow";
 import SettingsOption from "../components/SettingsOption";
 
 export default function PerfilScreen({ navigation }) {
-
+    // Usuario
+    const [nome, setNome] = useState("talia");
+    const [id, setId] = useState("4");
     const [photo, setPhoto] = useState(null);
+
+    // Fisioterapeuta 
+    const [fisioterapeuta, setFisioterapeuta] = useState("Teste");
+    const [photoFisio, setPhotoFisio] = useState(null);
+    
+    // Cordenadora
+    const [cordenadora, setCordenadora] = useState("Teste2");
+    const [photoCoord, setPhotoCoord] = useState(null);
+
+    // Progresso semanal
+    const [percentualMeta, setPercentualMeta] = useState("");
+    
 
     async function pickImage() {
         const result = await ImagePicker.launchImageLibraryAsync({
@@ -58,8 +72,8 @@ export default function PerfilScreen({ navigation }) {
                     </View>
                 </TouchableOpacity>
 
-                <Text style={styles.name}>Cristiane Imamura</Text>
-                <Text style={styles.id}>ID: #8829-REHAB</Text>
+                <Text style={styles.name}>{nome}</Text>
+                <Text style={styles.id}>ID: #{id}</Text>
             </View>
 
             <View style={styles.card}>
@@ -67,7 +81,7 @@ export default function PerfilScreen({ navigation }) {
 
                     <PersonRow 
                     image={require("../../assets/dra.jpg")}
-                    name="Dr. Sarah Chen"
+                    name={fisioterapeuta}
                     role="Especialista Ortopédica"/>
 
                 <Text style={[styles.label, { marginTop: 20 }]}>
@@ -76,7 +90,7 @@ export default function PerfilScreen({ navigation }) {
 
                 <PersonRow 
                     image={require("../../assets/dra2.jpg")}
-                    name="Dr. Vanessa"
+                    name={cordenadora}
                     role="Especialista Ortopédica"/>
 
             <View style={styles.metaCard}>
