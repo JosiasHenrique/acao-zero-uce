@@ -1,9 +1,18 @@
-import { useEffect, useState } from "react";
-import { View, Text, StyleSheet, Alert, TouchableOpacity, Image } from "react-native";
+import { useState } from "react";
+import {
+  View,
+  Text,
+  StyleSheet,
+  Alert,
+  TouchableOpacity,
+  Image,
+} from "react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+
 import InputField from "../components/InputField";
 import PrimaryButton from "../components/PrimaryButton";
 import AuthFooter from "../components/AuthFooter";
+
 import apiClient from "../../api/apiClient";
 
 export default function LoginScreen({ navigation }) {
@@ -12,10 +21,6 @@ export default function LoginScreen({ navigation }) {
 
   const [errors, setErrors] = useState({});
   const [loading, setLoading] = useState(false);
-
-  useEffect(() => {
-    apiClient.post
-  })
 
   const validate = () => {
     let newErrors = {};
@@ -42,28 +47,31 @@ export default function LoginScreen({ navigation }) {
     setLoading(true);
 
     try {
-
       const response = await apiClient.post("/auth/login", {
         email: email.toLowerCase().trim(),
         password: senha,
         accessMode: "APP",
-        appId: 1
+        appId: 1,
       });
 
-      const access_token = response.data.access_token;
-
-      console.log(`Log do token: ${access_token}`)
+      const { access_token, user } = response.data;
 
       if (!access_token) {
-        Alert.alert("Acesso Negado", "Token de acesso não fornecido.");
+        Alert.alert("Acesso Negado", "Token não fornecido.");
         return;
       }
 
-      await AsyncStorage.setItem("access_token", access_token)
+      // Salvar dados
+      await AsyncStorage.setItem("access_token", access_token);
+      await AsyncStorage.setItem("user", JSON.stringify(user));
 
-      navigation.navigate("Main")
-    } catch {
-      Alert.alert("Erro", "Problema ao fazer login.");
+      navigation.navigate("Main");
+
+    } catch (error) {
+      const message =
+        error?.response?.data?.message || "Erro ao fazer login.";
+
+      Alert.alert("Erro", message);
     } finally {
       setLoading(false);
     }
@@ -102,7 +110,9 @@ export default function LoginScreen({ navigation }) {
           error={errors.senha}
         />
 
-        <TouchableOpacity onPress={() => navigation.navigate("RecuperarSenha")}>
+        <TouchableOpacity
+          onPress={() => navigation.navigate("RecuperarSenha")}
+        >
           <Text style={styles.recover}>RECUPERAR SENHA</Text>
         </TouchableOpacity>
 
@@ -113,12 +123,20 @@ export default function LoginScreen({ navigation }) {
         />
 
         <View style={styles.registerContainer}>
-          <Text style={styles.registerText}>Não possui uma conta?</Text>
-          <TouchableOpacity onPress={() => navigation.navigate("Cadastro")}>
-            <Text style={styles.registerLink}>Cadastre-se agora</Text>
+          <Text style={styles.registerText}>
+            Não possui uma conta?
+          </Text>
+
+          <TouchableOpacity
+            onPress={() => navigation.navigate("Cadastro")}
+          >
+            <Text style={styles.registerLink}>
+              Cadastre-se agora
+            </Text>
           </TouchableOpacity>
         </View>
       </View>
+
       <AuthFooter />
     </View>
   );
@@ -187,5 +205,4 @@ const styles = StyleSheet.create({
     fontWeight: "600",
     marginTop: 4,
   },
-
 });

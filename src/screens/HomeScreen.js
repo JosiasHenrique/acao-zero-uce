@@ -1,12 +1,33 @@
 import { View, Text, StyleSheet, Image, ScrollView, TouchableOpacity } from "react-native";
-
 import { Ionicons } from "@expo/vector-icons";
+import { useEffect, useState } from "react";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+
 import ProgressCircle from "../components/ProgressCircle";
 import ExerciseCard from "../components/ExerciseCard";
 
 export default function HomeScreen() {
 
   const progresso = 78;
+
+  const [nome, setNome] = useState("");
+
+  useEffect(() => {
+    async function loadUser() {
+      try {
+        const userString = await AsyncStorage.getItem("user");
+
+        if (userString) {
+          const user = JSON.parse(userString);
+          setNome(user.name);
+        }
+      } catch (error) {
+        console.log("Erro ao carregar usuário:", error);
+      }
+    }
+
+    loadUser();
+  }, []);
 
   return (
     <ScrollView style={styles.container}>
@@ -21,7 +42,10 @@ export default function HomeScreen() {
 
         <View style={styles.heroContent}>
           <View>
-            <Text style={styles.hello}>Olá, Ana!</Text>
+            <Text style={styles.hello}>
+              Olá, {nome || "..." }!
+            </Text>
+
             <Text style={styles.subtitle}>
               Seu cuidado diário faz toda a diferença na sua recuperação.
             </Text>
@@ -39,12 +63,12 @@ export default function HomeScreen() {
           <Text style={styles.exerciseCount}>1 exercício</Text>
         </View>
 
-      <ExerciseCard 
-        title="Mobilidade de Ombro"
-        description="Pós-cirúrgico • Câncer de mama"
-        time="12 min"
-        image={require("../../assets/exercicio.jpg")}
-      />
+        <ExerciseCard 
+          title="Mobilidade de Ombro"
+          description="Pós-cirúrgico • Câncer de mama"
+          time="12 min"
+          image={require("../../assets/exercicio.jpg")}
+        />
 
         <TouchableOpacity style={styles.startButton}>
           <Text style={styles.startText}>Iniciar exercício</Text>
@@ -52,9 +76,7 @@ export default function HomeScreen() {
 
       </View>
 
-      {/* PROGRESSO */}
       <View style={styles.progressCard}>
-
         <Text style={styles.progressTitle}>Seu progresso</Text>
 
         <View style={styles.progressRow}>
@@ -72,7 +94,6 @@ export default function HomeScreen() {
         </View>
 
       </View>
-
     </ScrollView>
   );
 }
