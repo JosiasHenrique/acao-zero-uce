@@ -2,7 +2,7 @@ import { View, Text, StyleSheet, Image, ScrollView, TouchableOpacity } from "rea
 import { Ionicons } from "@expo/vector-icons";
 import { useEffect, useState } from "react";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-
+import { useNavigation } from "@react-navigation/native";
 import ProgressCircle from "../components/ProgressCircle";
 import ExerciseCard from "../components/ExerciseCard";
 
@@ -11,6 +11,7 @@ export default function HomeScreen() {
   const progresso = 78;
 
   const [nome, setNome] = useState("");
+  const navigation = useNavigation();
 
   useEffect(() => {
     async function loadUser() {
@@ -43,7 +44,7 @@ export default function HomeScreen() {
         <View style={styles.heroContent}>
           <View>
             <Text style={styles.hello}>
-              Olá, {nome || "..." }!
+              Olá, {nome || "..."}!
             </Text>
 
             <Text style={styles.subtitle}>
@@ -63,14 +64,17 @@ export default function HomeScreen() {
           <Text style={styles.exerciseCount}>1 exercício</Text>
         </View>
 
-        <ExerciseCard 
+        <ExerciseCard
           title="Mobilidade de Ombro"
           description="Pós-cirúrgico • Câncer de mama"
           time="12 min"
           image={require("../../assets/exercicio.jpg")}
         />
 
-        <TouchableOpacity style={styles.startButton}>
+        <TouchableOpacity
+          style={styles.startButton}
+          onPress={() => navigation.navigate("Exercicios")}
+        >
           <Text style={styles.startText}>Iniciar exercício</Text>
         </TouchableOpacity>
 
