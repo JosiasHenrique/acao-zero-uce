@@ -6,6 +6,7 @@ import RecuperarSenhaScreen from './src/screens/RecuperarSenhaScreen';
 import ConfirmarCodigoScreen from './src/screens/ConfirmarCodigoScreen';
 import BottomTabs from './src/screens/BottomNavigator';
 import ExercicioScreen from './src/screens/ExercicioScreen';
+import FeedbackScreen from './src/screens/FeedbackScreen';
 
 const Stack = createNativeStackNavigator();
 
@@ -20,6 +21,7 @@ export default function App() {
         <Stack.Screen name="RecuperarSenha" component={RecuperarSenhaScreen} />
         <Stack.Screen name="ConfirmarCodigo" component={ConfirmarCodigoScreen} />
         <Stack.Screen name="Exercicios" component={ExercicioScreen} />
+        <Stack.Screen name="Feedback" component={FeedbackScreen} />
         <Stack.Screen name="Main" component={BottomTabs} />
       </Stack.Navigator>
     </NavigationContainer>

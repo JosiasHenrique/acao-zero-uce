@@ -68,7 +68,10 @@ export default function ExercicioScreen({ navigation }) {
       </ScrollView>
 
       <View style={styles.footer}>
-        <TouchableOpacity style={styles.button}>
+        <TouchableOpacity 
+          style={styles.button}
+          onPress={() => navigation.navigate("Feedback")}
+        >
           <Text style={styles.buttonText}>Concluir Atividade</Text>
         </TouchableOpacity>
       </View>
