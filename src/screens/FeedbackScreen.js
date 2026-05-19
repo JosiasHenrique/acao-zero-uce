@@ -1,7 +1,7 @@
-import { View, ScrollView, StyleSheet, Text, TouchableOpacity, TextInput, Image } from "react-native";
+import { View, ScrollView, StyleSheet, Text, TouchableOpacity, TextInput, Image, Alert, ActivityIndicator } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { useState } from "react";
-
+import apiClient from "../../api/apiClient";
 const PRIMARY = "#15803d";
 
 const niveis = [
@@ -37,10 +37,53 @@ const niveis = [
   },
 ];
 
-export default function FeedbackScreen({ navigation }) {
+export default function FeedbackScreen({ navigation, route }) {
   const [selecionado, setSelecionado] = useState(5);
   const [observacao, setObservacao] = useState("");
+  const [loading, setLoading] = useState(false);
 
+  const executionId = route.params?.executionId || 901;
+console.log("ID da execução recebido na tela de Feedback:", executionId);
+
+  const handleSaveFeedback = async () => {
+  if (loading) return;
+  setLoading(true);
+
+  try {
+    const response = await apiClient.post(`app/home/plan/executions/${executionId}/feedback`, {
+      score: selecionado,
+      notes: observacao,
+    });
+
+    if (response.status === 200 || response.status === 201) {
+      Alert.alert("Sucesso!", "Feedback registrado com sucesso!", [
+  { 
+    text: "OK", 
+    onPress: () => {
+      navigation.navigate("Main", { screen: "Inicio" });
+    }
+  }
+]);
+    }
+} catch (error) {
+    
+    if (error.response) {
+      const status = error.response.status;
+      if (status === 409) {
+        Alert.alert("Aviso", "O feedback para esta sessão já foi enviado.");
+      } else if (status === 404) {
+        Alert.alert("Erro", "Execução não encontrada.");
+      } else {
+        Alert.alert("Erro", "Erro ao salvar feedback.");
+      }
+    } else {
+      Alert.alert("Erro de Conexão", "Não foi possível conectar ao servidor.");
+    }
+    console.error("Erro no feedback:", error.response?.data);
+  } finally {
+    setLoading(false);
+  }
+};
   return (
     <View style={styles.container}>
       <ScrollView
@@ -147,11 +190,11 @@ export default function FeedbackScreen({ navigation }) {
       </ScrollView>
 
       <View style={styles.footer}>
-        <TouchableOpacity style={styles.button}>
+        <TouchableOpacity style={[styles.button, loading && {opacity:0.7}]} onPress={handleSaveFeedback} disabled={loading}>
           <Text style={styles.buttonText}>Salvar Feedback</Text>
         </TouchableOpacity>
       </View>
-    </View>
+    </View> 
   );
 }
 

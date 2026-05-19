@@ -2,19 +2,23 @@ import { View, Text, StyleSheet, Image } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 
 export default function ExerciseCard({ title, description, time, image }) {
+
+  const imageSource = typeof image === 'string' ? { uri: image } : image;
+
   return (
     <View style={styles.exerciseCard}>
       <View style={styles.infoContainer}>
-        <Text style={styles.exerciseName}>{title}</Text>
-        <Text style={styles.exerciseDesc}>{description}</Text>
+        {/* Usamos as props que vêm da Home */}
+        <Text style={styles.exerciseName}>{title || "Sem título"}</Text>
+        <Text style={styles.exerciseDesc}>{description || "Sem descrição"}</Text>
 
         <View style={styles.timeRow}>
           <Ionicons name="time-outline" size={16} color="#555" />
-          <Text style={styles.time}> {time}</Text>
+          <Text style={styles.time}> {time || "10 min"}</Text>
         </View>
       </View>
 
-      <Image source={image} style={styles.exerciseImage} />
+      <Image source={imageSource} style={styles.exerciseImage} />
     </View>
   );
 }

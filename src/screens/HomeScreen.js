@@ -1,33 +1,42 @@
-import { View, Text, StyleSheet, Image, ScrollView, TouchableOpacity } from "react-native";
+import { View, Text, StyleSheet, Image, ScrollView, TouchableOpacity, ActivityIndicator } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { useEffect, useState } from "react";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useNavigation } from "@react-navigation/native";
 import ProgressCircle from "../components/ProgressCircle";
 import ExerciseCard from "../components/ExerciseCard";
+import apiClient from "../../api/apiClient"; 
 
 export default function HomeScreen() {
-
-  const progresso = 78;
-
   const [nome, setNome] = useState("");
+  const [homeData, setHomeData] = useState(null); 
+  const [loading, setLoading] = useState(true); 
   const navigation = useNavigation();
 
   useEffect(() => {
-    async function loadUser() {
+    async function loadData() {
+    
       try {
+        // 1. Pega o nome do usuário salvo localmente
         const userString = await AsyncStorage.getItem("user");
-
         if (userString) {
           const user = JSON.parse(userString);
           setNome(user.name);
         }
+
+        // 2. Busca os dados da Home na API
+        const response = await apiClient.get("app/home");
+        console.log("DEBUG API HOME:", JSON.stringify(response.data, null, 2));
+        setHomeData(response.data);
+
       } catch (error) {
-        console.log("Erro ao carregar usuário:", error);
+        console.log("Erro ao carregar dados da Home:", error);
+      } finally {
+        setLoading(false);
       }
     }
 
-    loadUser();
+    loadData();
   }, []);
 
   return (
@@ -61,43 +70,67 @@ export default function HomeScreen() {
 
         <View style={styles.rowBetween}>
           <Text style={styles.cardTitle}>Seu plano de hoje</Text>
-          <Text style={styles.exerciseCount}>1 exercício</Text>
+          {loading ? (
+            <ActivityIndicator size="small" color="#33b8af" />
+          ) : (
+            <Text style={styles.exerciseCount}>
+              {homeData?.plan?.totalExercises || 0} exercícios
+            </Text>
+          )}
         </View>
 
-        <ExerciseCard
-          title="Mobilidade de Ombro"
-          description="Pós-cirúrgico • Câncer de mama"
-          time="12 min"
-          image={require("../../assets/exercicio.jpg")}
-        />
+        {loading ? (
+           <ActivityIndicator size="large" color="#33b8af" style={{ marginVertical: 30 }} />
+        ) : (
+          <ExerciseCard
+            title={homeData?.nextExercise?.exerciseName || "Exercício"}
+            description={homeData?.nextExercise ? `${homeData.nextExercise.axis} • ${homeData.nextExercise.problem}` : "Plano concluído"}
+            time="12 min"
+            image={require("../../assets/exercicio.jpg")}
+          />
+        )}
 
         <TouchableOpacity
-          style={styles.startButton}
-          onPress={() => navigation.navigate("Exercicios")}
+          style={[styles.startButton, (loading || !homeData?.nextExercise) && { opacity: 0.7 }]}
+          disabled={loading || !homeData?.nextExercise}
+          onPress={() => {
+            // Passa o ID real para a tela de Exercício
+            if (homeData?.nextExercise?.prescriptionItemId) {
+              navigation.navigate("Exercicios", { 
+                executionId: homeData.nextExercise.prescriptionItemId 
+              });
+            }
+          }}
         >
-          <Text style={styles.startText}>Iniciar exercício</Text>
+          <Text style={styles.startText}>
+            {homeData?.nextExercise ? "Iniciar exercício" : "Concluído"}
+          </Text>
         </TouchableOpacity>
 
       </View>
 
       <View style={styles.progressCard}>
-        <Text style={styles.progressTitle}>Seu progresso</Text>
+  <Text style={styles.progressTitle}>Seu progresso</Text>
 
-        <View style={styles.progressRow}>
-          <ProgressCircle percent={progresso} />
+  <View style={styles.progressRow}>
+    {/* Colocamos o !loading &&. 
+      Isso faz o ProgressCircle só aparecer na tela DEPOIS que a API terminar de carregar.
+    */}
+    {!loading && (
+      <ProgressCircle percent={Number(homeData?.plan?.percentCompleted) || 0} />
+    )}
 
-          <View style={{ flex: 1 }}>
-            <Text style={styles.progressMsg}>
-              Você está indo muito bem!
-            </Text>
+    <View style={{ flex: 1, marginLeft: 15 }}> 
+      <Text style={styles.progressMsg}>
+        {homeData?.motivation?.message || "Você está indo muito bem!"}
+      </Text>
 
-            <Text style={styles.progressSub}>
-              Continue assim 💚
-            </Text>
-          </View>
-        </View>
-
-      </View>
+      <Text style={styles.progressSub}>
+        Continue assim 💚
+      </Text>
+    </View>
+  </View>
+</View>
     </ScrollView>
   );
 }
@@ -105,7 +138,6 @@ export default function HomeScreen() {
 const PRIMARY = "#33b8af";
 
 const styles = StyleSheet.create({
-
   container: {
     flex: 1,
     backgroundColor: "#F3F3F3",
@@ -211,5 +243,4 @@ const styles = StyleSheet.create({
     color: "#666",
     marginTop: 5,
   },
-
 });
