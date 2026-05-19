@@ -6,6 +6,7 @@ import {
   Text,
   TouchableOpacity,
   ActivityIndicator,
+  Alert,
 } from "react-native";
 import apiClient from "../../api/apiClient";
 
@@ -36,7 +37,6 @@ const handleFinalizarExercicio = async () => {
     navigation.navigate("Feedback", { executionId: idGeradoPeloBanco });
     
   } catch (error) {
-    console.error("Erro ao registrar conclusão:", error);
     Alert.alert("Erro", "Não conseguimos registrar a conclusão do exercício.");
   } finally {
     setCompleting(false);
@@ -52,7 +52,7 @@ const handleFinalizarExercicio = async () => {
         );
         setDadosExercicio(response.data);
       } catch (error) {
-        console.log("Erro ao carregar exercício:", error);
+        // silently fails; loading state returns to false
       } finally {
         setLoading(false);
       }

@@ -42,11 +42,14 @@ export default function FeedbackScreen({ navigation, route }) {
   const [observacao, setObservacao] = useState("");
   const [loading, setLoading] = useState(false);
 
-  const executionId = route.params?.executionId || 901;
-console.log("ID da execução recebido na tela de Feedback:", executionId);
+  const executionId = route.params?.executionId;
 
   const handleSaveFeedback = async () => {
   if (loading) return;
+  if (!executionId) {
+    Alert.alert("Erro", "ID da execução não encontrado.");
+    return;
+  }
   setLoading(true);
 
   try {
@@ -79,7 +82,6 @@ console.log("ID da execução recebido na tela de Feedback:", executionId);
     } else {
       Alert.alert("Erro de Conexão", "Não foi possível conectar ao servidor.");
     }
-    console.error("Erro no feedback:", error.response?.data);
   } finally {
     setLoading(false);
   }

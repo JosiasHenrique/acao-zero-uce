@@ -128,7 +128,7 @@ export default function LoginScreen({ navigation }) {
           </Text>
 
           <TouchableOpacity
-            onPress={() => navigation.navigate("Cadastro")}
+            onPress={() => Alert.alert("Em breve", "O cadastro será disponibilizado em breve.")}
           >
             <Text style={styles.registerLink}>
               Cadastre-se agora

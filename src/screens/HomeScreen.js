@@ -9,8 +9,9 @@ import apiClient from "../../api/apiClient";
 
 export default function HomeScreen() {
   const [nome, setNome] = useState("");
-  const [homeData, setHomeData] = useState(null); 
-  const [loading, setLoading] = useState(true); 
+  const [homeData, setHomeData] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [userPhoto, setUserPhoto] = useState(null);
   const navigation = useNavigation();
 
   useEffect(() => {
@@ -22,15 +23,17 @@ export default function HomeScreen() {
         if (userString) {
           const user = JSON.parse(userString);
           setNome(user.name);
+          if (user.photoUrl || user.avatar) {
+            setUserPhoto(user.photoUrl ?? user.avatar);
+          }
         }
 
         // 2. Busca os dados da Home na API
         const response = await apiClient.get("app/home");
-        console.log("DEBUG API HOME:", JSON.stringify(response.data, null, 2));
         setHomeData(response.data);
 
       } catch (error) {
-        console.log("Erro ao carregar dados da Home:", error);
+        // silently fails
       } finally {
         setLoading(false);
       }
@@ -61,7 +64,13 @@ export default function HomeScreen() {
             </Text>
           </View>
 
-          <Ionicons name="notifications-outline" size={26} color="#000" />
+          <View style={styles.heroActions}>
+            <Ionicons name="notifications-outline" size={26} color="#000" />
+            <Image
+              source={userPhoto ? { uri: userPhoto } : require("../../assets/profile.jpg")}
+              style={styles.heroAvatar}
+            />
+          </View>
         </View>
 
       </View>
@@ -162,8 +171,23 @@ const styles = StyleSheet.create({
   heroContent: {
     flexDirection: "row",
     justifyContent: "space-between",
+    alignItems: "flex-start",
     paddingHorizontal: 20,
     paddingTop: 60,
+  },
+
+  heroActions: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 12,
+  },
+
+  heroAvatar: {
+    width: 36,
+    height: 36,
+    borderRadius: 18,
+    borderWidth: 2,
+    borderColor: "#FFF",
   },
 
   hello: {

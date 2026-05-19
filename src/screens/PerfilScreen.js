@@ -83,9 +83,10 @@ export default function PerfilScreen({ navigation }) {
     <ScrollView style={styles.container}>
       <ScreenHeader
         rightElement={
-          <TouchableOpacity>
-            <Icon name="person-circle" size={34} color="#33b8af" />
-          </TouchableOpacity>
+          <Image
+            source={photo ? { uri: photo } : require("../../assets/profile.jpg")}
+            style={styles.headerAvatar}
+          />
         }
       />
 
@@ -282,5 +283,13 @@ const styles = StyleSheet.create({
   progressFill: {
     height: "100%",
     backgroundColor: "#33b8af",
+  },
+
+  headerAvatar: {
+    width: 36,
+    height: 36,
+    borderRadius: 18,
+    borderWidth: 2,
+    borderColor: "#33b8af",
   },
 });
