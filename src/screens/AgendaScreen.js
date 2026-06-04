@@ -57,12 +57,24 @@ function getStatusIcon(status) {
   return "ellipse-outline";
 }
 
+function mapAppointment(apt) {
+  const scheduledAt = new Date(apt.scheduledAt);
+  return {
+    id: apt.id,
+    time: scheduledAt.toLocaleTimeString("pt-BR", { hour: "2-digit", minute: "2-digit" }),
+    name: apt.location?.name ?? (apt.modality === "ONLINE" ? "Consulta Online" : "Consulta Presencial"),
+    status: scheduledAt < new Date() ? "completed" : "scheduled",
+    axis: apt.modality === "IN_PERSON" ? "Presencial" : "Online",
+    problem: apt.location?.address ?? null,
+  };
+}
+
 export default function AgendaScreen() {
   const today = new Date();
 
   const [selectedDate, setSelectedDate] = useState(today);
   const [weekCenter, setWeekCenter] = useState(today);
-  const [sessions, setSessions] = useState([]);
+  const [allAppointments, setAllAppointments] = useState([]);
   const [loading, setLoading] = useState(true);
   const [userPhoto, setUserPhoto] = useState(null);
 
@@ -81,25 +93,28 @@ export default function AgendaScreen() {
     loadUser();
   }, []);
 
-  const days = generateWeekDays(weekCenter);
-  const monthLabel = `${MONTHS_PT[selectedDate.getMonth()]} ${selectedDate.getFullYear()}`;
-
   useEffect(() => {
-    async function fetchSessions() {
+    async function fetchAppointments() {
       setLoading(true);
       try {
-        const dateKey = formatDateKey(selectedDate);
-        const response = await apiClient.get(`app/agenda?date=${dateKey}`);
-        const data = response.data;
-        setSessions(Array.isArray(data) ? data : data?.sessions ?? []);
+        const response = await apiClient.get("app/home/appointments");
+        const raw = response.data;
+        setAllAppointments(Array.isArray(raw) ? raw : raw?.appointments ?? []);
       } catch {
-        setSessions([]);
+        setAllAppointments([]);
       } finally {
         setLoading(false);
       }
     }
-    fetchSessions();
-  }, [selectedDate]);
+    fetchAppointments();
+  }, []);
+
+  const days = generateWeekDays(weekCenter);
+  const monthLabel = `${MONTHS_PT[selectedDate.getMonth()]} ${selectedDate.getFullYear()}`;
+
+  const sessions = allAppointments
+    .filter(apt => isSameDay(new Date(apt.scheduledAt), selectedDate))
+    .map(mapAppointment);
 
   function prevWeek() {
     const d = new Date(weekCenter);
@@ -134,7 +149,6 @@ export default function AgendaScreen() {
         }
       />
 
-      {/* Navegação de mês */}
       <View style={styles.monthRow}>
         <TouchableOpacity onPress={prevWeek} style={styles.navBtn}>
           <Ionicons name="chevron-back" size={22} color="#1A1A1A" />
@@ -145,7 +159,6 @@ export default function AgendaScreen() {
         </TouchableOpacity>
       </View>
 
-      {/* Strip de dias */}
       <View style={styles.weekStrip}>
         {days.map((d) => {
           const isSelected = isSameDay(d, selectedDate);
@@ -168,7 +181,6 @@ export default function AgendaScreen() {
         })}
       </View>
 
-      {/* Lista de sessões */}
       <ScrollView
         style={styles.list}
         showsVerticalScrollIndicator={false}
@@ -183,7 +195,7 @@ export default function AgendaScreen() {
             <Ionicons name="calendar-outline" size={56} color="#D1D5DB" />
             <Text style={styles.emptyTitle}>Nenhuma sessão</Text>
             <Text style={styles.emptySubtitle}>
-              Não há exercícios agendados para este dia.
+              Não há consultas agendadas para este dia.
             </Text>
           </View>
         ) : (
@@ -200,15 +212,10 @@ export default function AgendaScreen() {
                     <Text style={styles.sessionTime}>
                       {session.time ?? "--:--"}
                     </Text>
-                    {session.duration != null && (
-                      <Text style={styles.sessionDuration}>
-                        • {session.duration} min
-                      </Text>
-                    )}
                   </View>
 
                   <Text style={styles.sessionName}>
-                    {session.name ?? session.exerciseName ?? "Exercício"}
+                    {session.name ?? "Consulta"}
                   </Text>
 
                   {(session.axis || session.problem) && (
@@ -256,7 +263,6 @@ const styles = StyleSheet.create({
     borderColor: PRIMARY,
   },
 
-  // Mês
   monthRow: {
     flexDirection: "row",
     alignItems: "center",
@@ -274,7 +280,6 @@ const styles = StyleSheet.create({
     color: "#1A1A1A",
   },
 
-  // Strip de dias
   weekStrip: {
     flexDirection: "row",
     justifyContent: "space-between",
@@ -316,7 +321,6 @@ const styles = StyleSheet.create({
     marginTop: 4,
   },
 
-  // Lista
   list: {
     flex: 1,
   },
@@ -334,7 +338,6 @@ const styles = StyleSheet.create({
     marginTop: 50,
   },
 
-  // Empty state
   emptyState: {
     alignItems: "center",
     marginTop: 60,
@@ -352,7 +355,6 @@ const styles = StyleSheet.create({
     lineHeight: 22,
   },
 
-  // Card de sessão
   sessionCard: {
     backgroundColor: "#FFF",
     borderRadius: 20,
@@ -380,10 +382,6 @@ const styles = StyleSheet.create({
     fontSize: 13,
     fontWeight: "600",
     color: "#1A1A1A",
-  },
-  sessionDuration: {
-    fontSize: 13,
-    color: "#999",
   },
   sessionName: {
     fontSize: 17,

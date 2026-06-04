@@ -50,8 +50,36 @@ export default function ProgressoScreen() {
   useEffect(() => {
     async function fetchProgress() {
       try {
-        const response = await apiClient.get("app/progress");
-        setData(response.data);
+        const [homeRes, weekRes] = await Promise.all([
+          apiClient.get("app/home"),
+          apiClient.get("app/home/plan/week"),
+        ]);
+
+        const home = homeRes.data;
+        const week = weekRes.data;
+
+        const weeklyProgress = [0, 0, 0, 0, 0, 0, 0];
+        if (week.weekStart && Array.isArray(week.days)) {
+          const startDate = new Date(week.weekStart);
+          week.days.forEach((day) => {
+            const diff = Math.round(
+              (new Date(day.date) - startDate) / (1000 * 60 * 60 * 24)
+            );
+            if (diff >= 0 && diff < 7) {
+              weeklyProgress[diff] = day.summary?.percentCompleted ?? 0;
+            }
+          });
+        }
+
+        setData({
+          weeklyProgress,
+          totalCompleted: home.plan?.completedExercises ?? 0,
+          totalExercises: home.plan?.totalExercises ?? 0,
+          completionRate: home.plan?.percentCompleted ?? 0,
+          percentCompleted: home.plan?.percentCompleted ?? 0,
+          history: [],
+          motivation: home.motivation,
+        });
       } catch {
         setData(null);
       } finally {
@@ -77,7 +105,7 @@ export default function ProgressoScreen() {
 
   const weekData = data?.weeklyProgress ?? [0, 0, 0, 0, 0, 0, 0];
   const totalDone = data?.totalCompleted ?? 0;
-  const streak = data?.streak ?? 0;
+  const totalExercises = data?.totalExercises ?? 0;
   const rate = Number(data?.completionRate ?? 0);
   const percent = Number(data?.percentCompleted ?? 0);
   const history = data?.history ?? [];
@@ -133,9 +161,9 @@ export default function ProgressoScreen() {
             </View>
 
             <View style={styles.statCard}>
-              <Ionicons name="flame" size={28} color="#f97316" />
-              <Text style={styles.statValue}>{streak}</Text>
-              <Text style={styles.statLabel}>Dias seguidos</Text>
+              <Ionicons name="barbell" size={28} color="#f97316" />
+              <Text style={styles.statValue}>{totalExercises}</Text>
+              <Text style={styles.statLabel}>Total do plano</Text>
             </View>
 
             <View style={styles.statCard}>

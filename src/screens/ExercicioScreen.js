@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import {
   View,
   ScrollView,
@@ -28,16 +28,21 @@ export default function ExercicioScreen({ navigation, route }) {
 const handleFinalizarExercicio = async () => {
   setCompleting(true);
   try {
-    // 1. Avisa o servidor que o exercício terminou e pega o executionId real
     const response = await apiClient.post(`app/home/plan/exercises/${executionId}/complete`);
-    
     const idGeradoPeloBanco = response.data.executionId;
-
-    // 2. Agora sim, vai para o Feedback levando o ID CORRETO
     navigation.navigate("Feedback", { executionId: idGeradoPeloBanco });
-    
   } catch (error) {
-    Alert.alert("Erro", "Não conseguimos registrar a conclusão do exercício.");
+    const status = error?.response?.status;
+    const existingId = error?.response?.data?.executionId;
+    if (status === 409 && existingId) {
+      navigation.navigate("Feedback", { executionId: existingId });
+    } else if (status === 409) {
+      Alert.alert("Aviso", "Exercício já concluído. Verifique se o feedback foi enviado.", [
+        { text: "OK", onPress: () => navigation.navigate("Main", { screen: "Inicio" }) },
+      ]);
+    } else {
+      Alert.alert("Erro", "Não conseguimos registrar a conclusão do exercício.");
+    }
   } finally {
     setCompleting(false);
   }

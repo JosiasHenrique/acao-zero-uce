@@ -12,6 +12,9 @@ import {
 import * as ImagePicker from "expo-image-picker";
 import Icon from "react-native-vector-icons/Ionicons";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import apiClient from "../../api/apiClient";
+
+const SERVER_BASE = "http://185.217.125.219:3000";
 
 import ScreenHeader from "../components/ScreenHeader";
 import PersonRow from "../components/PersonRow";
@@ -29,39 +32,69 @@ export default function PerfilScreen({ navigation }) {
 
   // Coordenadora
   const [cordenadora, setCordenadora] = useState("Teste2");
+  const [coordEspecialidade, setCoordEspecialidade] = useState("Especialista Ortopédica");
   const [photoCoord, setPhotoCoord] = useState(null);
 
   // Progresso semanal
-  const [percentualMeta, setPercentualMeta] = useState("85");
+  const [percentualMeta, setPercentualMeta] = useState("0");
 
-  // 🔥 Carregar usuário do AsyncStorage
   useEffect(() => {
-    async function loadUser() {
+    async function loadProfileData() {
       try {
-        const userString = await AsyncStorage.getItem("user");
+        const [profileRes, homeRes] = await Promise.all([
+          apiClient.get("app/home/profile"),
+          apiClient.get("app/home"),
+        ]);
 
+        const { profile, coordinator } = profileRes.data;
+        const home = homeRes.data;
+
+        if (profile) {
+          setNome(profile.name ?? "");
+          setId(profile.id?.toString() ?? "");
+          if (profile.photoUrl) {
+            setPhoto(SERVER_BASE + profile.photoUrl);
+          }
+        }
+
+        if (coordinator) {
+          setCordenadora(coordinator.name ?? "Não informado");
+          setCoordEspecialidade(coordinator.primarySpecialty ?? "Coordenador Responsável");
+        }
+
+        setPercentualMeta(String(home.plan?.percentCompleted ?? 0));
+      } catch {
+        const userString = await AsyncStorage.getItem("user").catch(() => null);
         if (userString) {
           const user = JSON.parse(userString);
-
-          setNome(user.name);
-          setId(user.id.toString());
+          setNome(user.name ?? "");
+          setId(user.id?.toString() ?? "");
         }
-      } catch (error) {
-        console.log("Erro ao carregar usuário:", error);
       }
     }
 
-    loadUser();
+    loadProfileData();
   }, []);
 
   async function pickImage() {
     const result = await ImagePicker.launchImageLibraryAsync({
       mediaTypes: ImagePicker.MediaTypeOptions.Images,
-      quality: 1,
+      quality: 0.8,
     });
 
     if (!result.canceled) {
-      setPhoto(result.assets[0].uri);
+      const uri = result.assets[0].uri;
+      setPhoto(uri);
+
+      try {
+        const formData = new FormData();
+        formData.append("file", { uri, type: "image/jpeg", name: "photo.jpg" });
+        await apiClient.post("app/home/profile/photo", formData, {
+          headers: { "Content-Type": "multipart/form-data" },
+        });
+      } catch {
+        // foto atualizada localmente mesmo se o upload falhar
+      }
     }
   }
 
@@ -126,7 +159,7 @@ export default function PerfilScreen({ navigation }) {
         <PersonRow
           image={require("../../assets/dra2.jpg")}
           name={cordenadora}
-          role="Especialista Ortopédica"
+          role={coordEspecialidade}
         />
 
         <View style={styles.metaCard}>

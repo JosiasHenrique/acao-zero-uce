@@ -52,11 +52,13 @@ export default function FeedbackScreen({ navigation, route }) {
   }
   setLoading(true);
 
+  const body = { score: selecionado };
+  if (observacao.trim()) {
+    body.notes = observacao.trim();
+  }
+
   try {
-    const response = await apiClient.post(`app/home/plan/executions/${executionId}/feedback`, {
-      score: selecionado,
-      notes: observacao,
-    });
+    const response = await apiClient.post(`app/home/plan/executions/${executionId}/feedback`, body);
 
     if (response.status === 200 || response.status === 201) {
       Alert.alert("Sucesso!", "Feedback registrado com sucesso!", [
@@ -73,7 +75,9 @@ export default function FeedbackScreen({ navigation, route }) {
     if (error.response) {
       const status = error.response.status;
       if (status === 409) {
-        Alert.alert("Aviso", "O feedback para esta sessão já foi enviado.");
+        Alert.alert("Aviso", "Feedback já registrado para esta sessão.", [
+          { text: "OK", onPress: () => navigation.navigate("Main", { screen: "Inicio" }) },
+        ]);
       } else if (status === 404) {
         Alert.alert("Erro", "Execução não encontrada.");
       } else {
